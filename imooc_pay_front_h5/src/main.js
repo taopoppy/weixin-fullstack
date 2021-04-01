@@ -6,6 +6,8 @@ import Vue from 'vue'
 import App from './App.vue'
 import axios from 'axios'
 import VueAxios from 'vue-axios' // 帮助将axios挂载到vue上，每个页面通过this.axios请求
+import router from './router/index' // 引入路由文件
+import './assets/css/commen.css' // 引入全局通用样式
 Vue.config.productionTip = false
 
 axios.interceptors.request.use(function(){
@@ -27,5 +29,6 @@ axios.interceptors.response.use(
 
 Vue.use(VueAxios, axios)
 new Vue({
+  router, // 进行路由配置
   render: h => h(App),
 }).$mount('#app')

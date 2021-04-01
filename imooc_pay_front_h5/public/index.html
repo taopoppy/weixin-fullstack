@@ -7,23 +7,24 @@
     <link rel="icon" href="<%= BASE_URL %>favicon.ico">
     <title>imooc_pay_front_h5</title>
     <script>
-      function initHtmlFontSize() {
-        console.log("正在初始化rem比例")
-        let screenWidth = document.documentElement.clientWidth // document.documentElement返回的是html文档对象
-        let fontSize = screenWidth / 750 * 10 // 计算出rem的比例
-        document.documentElement.style.fontSize = fontSize + "px"
-      }　 
-      initHtmlFontSize() // 首次加载应用，设置一次
-      window.addEventListener('orientationchange', initHtmlFontSize)// 监听手机旋转的事件的时机，重新设置
-      window.addEventListener('resize', initHtmlFontSize) // 监听手机窗口变化，重新设置
-      
+      !(function (n) {
+        var e = n.document, // 获取DOM
+        t = e.documentElement, // 获取html
+        i = 750, // 设计稿尺寸
+        d = i / 100, // 设置比例
+        o = "orientationchange" in n ? "orientationchange" : "resize", // 横屏orientationchange，竖屏resize
+        a = function () {
+          var n = t.clientWidth || 375; // 屏幕宽度
+          n > 750 && (n = 750); // 屏幕宽度大于750 强制等于750
+          t.style.fontSize = n / d + "px"; // 设置转化后的html字体
+        };
+      e.addEventListener && // 监听
+      (n.addEventListener(o, a, !1), // !1为false，在冒泡过程中捕获
+      e.addEventListener("DOMContentLoaded", a, !1));// 网页加载完成后 绑定的一个事件
+  })(window);
     </script>
   </head>
-  <body>
-    <noscript>
-      <strong>We're sorry but imooc_pay_front_h5 doesn't work properly without JavaScript enabled. Please enable it to continue.</strong>
-    </noscript>
+  <body style="margin: 0;">
     <div id="app"></div>
-    <!-- built files will be auto injected -->
   </body>
 </html>
