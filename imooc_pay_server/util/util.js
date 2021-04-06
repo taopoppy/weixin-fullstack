@@ -43,6 +43,7 @@ module.exports = {
     return val.substr(1);
   },
   // 对请求结果统一封装处理
+  // body实际上也是涵盖在response当中的
   handleResponse(err, response, body){
     if (!err && response.statusCode == '200') {
       let data = JSON.parse(body);
@@ -56,6 +57,7 @@ module.exports = {
       return this.handleFail(err, 10009);
     }
   },
+  // 处理成功响应
   handleSuc(data=''){
     return {
       code: 0,
@@ -63,6 +65,7 @@ module.exports = {
       message: ''
     }
   },
+  // 处理错误响应
   handleFail(message = '',code = 10001){
     return {
       code,

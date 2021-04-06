@@ -17,8 +17,9 @@ Vue.config.productionTip = false
 Vue.use(VueAxios, axios)
 Vue.use(VueCookie)
 
-axios.interceptors.request.use(function(){
+axios.interceptors.request.use(function(request){
   // 请求地址的处理（修改替换），请求loading的处理都可以在这里进行
+  return request
 })
 
 //{code: 0,data返回的是结果，message是报错原因}
@@ -29,6 +30,7 @@ axios.interceptors.response.use(
       // 统一处理
       alert(res.message)
     }
+    return response
   },
   function(error){ // 网络请求发生错误,这样可以通过catch捕获到组件通过this.axios请求的异常
     return Promise.reject(error)

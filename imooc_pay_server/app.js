@@ -1,10 +1,11 @@
 var express = require('express');
 var path = require('path');
-var favicon = require('serve-favicon');
+// var favicon = require('serve-favicon');
 var logger = require('morgan');
-var cookieParser = require('cookie-parser');
-var bodyParser = require('body-parser');
+var cookieParser = require('cookie-parser'); // 获取前端cookie的插件
+var bodyParser = require('body-parser'); // 数据交互当中转换成json
 
+// 获取路由处理器
 var index = require('./routes/index');
 var wx = require('./routes/pay/wx');
 var mp = require('./routes/pay/mp');
@@ -23,6 +24,7 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
+// 定义访问的路由
 app.use('/', index);
 app.use('/api/wechat', wx);
 app.use('/api/mp', mp);

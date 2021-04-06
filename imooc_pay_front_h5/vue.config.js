@@ -5,7 +5,7 @@ module.exports = {
 		proxy: {
 			'/api': {
 				// 设置目标API地址
-				target: 'http://localhost:5000',
+				target: 'http://localhost:3000',
 				// 如果要代理websockets
 				ws:false,
 				// 将主机标头的原点改为目标URL
