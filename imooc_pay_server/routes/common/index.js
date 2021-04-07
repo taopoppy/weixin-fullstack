@@ -29,7 +29,7 @@ exports.getUserInfo = function (access_token,openId){
   })
 }
 
-// 获取基础接口的Token
+// 获取基础接口的Token（有效期7200秒，开发者必须在自己的服务全局缓存access_token）
 exports.getToken = function(){
   let token = `https://api.weixin.qq.com/cgi-bin/token?grant_type=client_credential&appid=${config.appId}&secret=${config.appSecret}`;
   return new Promise((resolve, reject)=>{
@@ -41,6 +41,8 @@ exports.getToken = function(){
 }
 
 // 根据Token获取Ticket
+// 频繁刷新jsapi_ticket会导致api调用受限，影响自身业务，开发者必须在自己的服务全局缓存jsapi_ticket
+// 建议也是两个小时，因为jsapi_ticket由access_token决定
 exports.getTicket = function (token) {
   let tokenUrl = `https://api.weixin.qq.com/cgi-bin/ticket/getticket?access_token=${token}&type=jsapi`;
   return new Promise((resolve, reject) => {

@@ -21,6 +21,7 @@ export default {
 	},
 	mounted() {
 		if(this.$cookie.get('openId')){
+			// 如果已经授权完成，我们就去获取获取用户信息
 			this.getUserInfo()
 		}
 	},
@@ -28,8 +29,6 @@ export default {
 		getUserInfo() {
 			this.$http.get(API.getUserInfo).then((response) => {
 				let res = response.data
-				// eslint-disable-next-line no-console
-				console.log('res'+ JSON.stringify(res))
 				this.userInfo = res.data
 			})
 		}

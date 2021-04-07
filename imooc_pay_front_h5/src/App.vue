@@ -53,14 +53,6 @@ export default {
         }
       })
     },
-    test() {
-      // setTimeout(()=> {
-      //   let APPID = "wx1c9b84a50e29f2af"
-      //   let REDIRECT_URI = encodeURIComponent("http://m.abcd.com/#/index")
-      //   let SCOPE = "snsapi_userinfo"
-      // window.location.href = `https://open.weixin.qq.com/connect/oauth2/authorize?appid=${APPID}&redirect_uri=${REDIRECT_URI}&response_type=code&scope=${SCOPE}&state=STATE#wechat_redirect`
-      // },5000)
-    }
   }
 }
 </script>

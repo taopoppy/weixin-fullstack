@@ -63,6 +63,8 @@ router.get('/getOpenId',async function(req,res){
       // }else{
       //   res.json(userRes);
       // }
+      let redirectUrl = cache.get('redirectUrl');
+      res.redirect(redirectUrl);
     }else{
       res.json(result); // 错误时微信会返回JSON数据包如下（示例为Code无效错误）:
     }
@@ -76,30 +78,30 @@ router.get('/getUserInfo',async function(req,res){
   res.json(result);
 })
 
-
+// 获取jssdk签名
 router.get('/jssdk',async function(req,res){
   let url = req.query.url;
-  let result = await common.getToken();
+  let result = await common.getToken(); // 1. 获取普通的access_token
   if (result.code == 0){
     let token = result.data.access_token;
     cache.put('token', token);
-    let result2 = await common.getTicket(token);
+    let result2 = await common.getTicket(token); // 2. 根据access_token去获取jsapi_ticket
     if (result2.code == 0){
       let data = result2.data;
       let params = {
-        noncestr:util.createNonceStr(),
-        jsapi_ticket: data.ticket,
-        timestamp:util.createTimeStamp(),
-        url
+        noncestr:util.createNonceStr(),   // 随机字符串（开发者自己定义）
+        jsapi_ticket: data.ticket,        // jsapi_ticket
+        timestamp:util.createTimeStamp(), // 时间戳（开发者自己定义）
+        url                               // url（当前网页的URL，不包含#及其后面部分）
       }
-      let str = util.raw(params);
+      let str = util.raw(params);         // ASCII 码从小到大排序
       console.log('str:::' + JSON.stringify(params))
-      let sign = createHash('sha1').update(str).digest('hex');
+      let sign = createHash('sha1').update(str).digest('hex'); // 3. sha1方法加密，最终生成签名
       res.json(util.handleSuc({
-        appId: config.appId, // 必填，公众号的唯一标识
-        timestamp: params.timestamp, // 必填，生成签名的时间戳
-        nonceStr: params.noncestr, // 必填，生成签名的随机串
-        signature: sign,// 必填，签名
+        appId: config.appId,              // 必填，公众号的唯一标识
+        timestamp: params.timestamp,      // 必填，生成签名的时间戳
+        nonceStr: params.noncestr,        // 必填，生成签名的随机串
+        signature: sign,                  // 必填，签名
         jsApiList: [
           'updateAppMessageShareData',
           'updateTimelineShareData',
@@ -108,12 +110,11 @@ router.get('/jssdk',async function(req,res){
           'onMenuShareQQ',
           'onMenuShareQZone',
           'chooseWXPay'
-        ] // 必填，需要使用的JS接口列表
+        ] // 必填，需要使用的JS接口列表，这个是要根据自己的需求，比如我们要使用分享和支付功能，就去JS-SDK说明文档中找这个接口名称即可
       }))
     }
   }
 })
-
 
 
 // 微信支付
