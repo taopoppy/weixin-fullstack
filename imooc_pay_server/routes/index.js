@@ -10,7 +10,7 @@ router.get('/', function(req, res, next) {
 });
 
 router.get('/query',async function (req,res,next) {
-  let data = await dao.query({id:100},'users');
+  let data = await dao.query({id:1},'users');
   res.json(data);
 })
 

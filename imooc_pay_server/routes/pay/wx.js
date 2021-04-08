@@ -39,32 +39,32 @@ router.get('/getOpenId',async function(req,res){
     if(result.code == 0){
       let data = result.data;
       let expire_time = 1000 * 60 * 60 * 2;                      // 设置有效时间2个小时,微信官网返回的只有两个小时有效期
-      cache.put('access_token', data.access_token, expire_time); // 缓存网页授权access_token
-      cache.put('openId', data.openid, expire_time);             // 缓存用户openid
+      cache.put('access_token', data.access_token, expire_time); // 缓存网页授权access_token(正式开发这里不应该缓存到后端)
+      cache.put('openId', data.openid, expire_time);             // 缓存用户openid(正式开发这里不应该缓存到后端)
       res.cookie('openId', data.openid, { maxAge: expire_time });// 将用户的openid放在将要返回个前端的cookie当中
-      // let openId = data.openid;
-      // let userRes = await dao.query({ 'openid': openId },'users');
-      // if (userRes.code == 0){
-      //   // 查到用户
-      //   if (userRes.data.length>0){
-      //     let redirectUrl = cache.get('redirectUrl');
-      //     res.redirect(redirectUrl);                            // 最终要跳转到前端的那个页面
-      //   }else{
-      //     // 没有查到用户，说明是新用户
-      //     let userData = await common.getUserInfo(data.access_token, openId); // 3. 拉取用户信息(需scope为 snsapi_userinfo)
-      //     let insertData = await dao.insert(userData.data,'users');
-      //     if (insertData.code == 0){
-      //       let redirectUrl = cache.get('redirectUrl');
-      //       res.redirect(redirectUrl);                          // 最终要跳转到前端的那个页面
-      //     }else{
-      //       res.json(insertData);
-      //     }
-      //   }
-      // }else{
-      //   res.json(userRes);
-      // }
-      let redirectUrl = cache.get('redirectUrl');
-      res.redirect(redirectUrl);
+
+      // 下面全部是将用户信息写入数据库的操作
+      let openId = data.openid;
+      let userRes = await dao.query({ 'openid': openId },'users');
+      if (userRes.code == 0){
+        // 查到用户
+        if (userRes.data.length>0){
+          let redirectUrl = cache.get('redirectUrl');
+          res.redirect(redirectUrl);                            // 最终要跳转到前端的那个页面
+        }else{
+          // 没有查到用户，说明是新用户，就要往数据库里存储一下
+          let userData = await common.getUserInfo(data.access_token, openId); // 3. 拉取用户信息(需scope为 snsapi_userinfo)
+          let insertData = await dao.insert(userData.data,'users');
+          if (insertData.code == 0){
+            let redirectUrl = cache.get('redirectUrl');
+            res.redirect(redirectUrl);                          // 最终要跳转到前端的那个页面
+          }else{
+            res.json(insertData);
+          }
+        }
+      }else{
+        res.json(userRes);
+      }
     }else{
       res.json(result); // 错误时微信会返回JSON数据包如下（示例为Code无效错误）:
     }

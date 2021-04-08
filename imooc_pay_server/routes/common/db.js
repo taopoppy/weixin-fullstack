@@ -3,7 +3,7 @@
  */
 let MongoClient = require('mongodb').MongoClient;
 let util = require('./../../util/util')
-let url = "mongodb://127.0.0.1:27018/imooc_pay"
+let url = "mongodb://127.0.0.1:27017/imooc_pay"
 
 // 查询数据
 exports.query = function (data,table) {
@@ -20,6 +20,7 @@ exports.query = function (data,table) {
     })
   })
 }
+
 // 插入数据
 exports.insert = function (data, table) {
   return new Promise((resolve, reject) => {
@@ -35,11 +36,13 @@ exports.insert = function (data, table) {
     })
   })
 }
+
 // 数据库连接
 function connect(callbck){
   MongoClient.connect(url,function (err,db) {
     if(err) throw err;
     let dbase = db.db('imooc_pay');
+    // dbase用来操作集合，db用来操作数据库
     callbck(dbase,db);
   })
 }
