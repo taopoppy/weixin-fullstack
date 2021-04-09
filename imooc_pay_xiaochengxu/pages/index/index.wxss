@@ -17,3 +17,12 @@
 .usermotto {
   margin-top: 200px;
 }
+
+.index {
+	height: 100vh;
+	background-color: #ffc93a;
+}
+.btn-group {
+	padding-top: 34rpx;
+	text-align: center;
+}

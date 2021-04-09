@@ -1,49 +1,57 @@
 // index.js
 // 获取应用实例
 const app = getApp()
+let Api = app.Api
+let store = require('../../utils/store.js')
 
 Page({
-  data: {
-    motto: 'Hello World',
-    userInfo: {}, // 用户信息
-    hasUserInfo: false, // 是否有用户信息
-    canIUse: wx.canIUse('button.open-type.getUserInfo'), // 是否可以使用wx.getUserInfo
-    canIUseGetUserProfile: false, // 是否可以使用wx.getUserProfile
-    canIUseOpenData: false // wx.canIUse('open-data.type.userAvatarUrl') && wx.canIUse('open-data.type.userNickName') // 如需尝试获取用户信息可改为false
+  data:{
+    userId: store.getItem('userId')
   },
-  // 事件处理函数
-  bindViewTap() {
-    wx.navigateTo({
-      url: '../logs/logs'
-    })
-  },
-  onLoad() {
-    if (wx.getUserProfile) {
-      this.setData({
-        canIUseGetUserProfile: true
-      })
-      this.getUserProfile()
+  onLoad:function() {
+    // 判断用户是否登录
+    if(!this.data.userId) {
+      // 没有登录就去登录，获取code，再获取openid
+      this.getSession()
     }
   },
-  getUserProfile(e) {
+  // 根据code去获取session
+  getSession() {
+    wx.login({
+      success: res => {
+        console.log("登录成功",res)
+        // 发送 res.code 到后台换取 openId, sessionKey, unionId
+        if(res.code) {
+          // 请求node后端，node后端再请求微信服务器获取到openid
+          app.get(Api.getSession, {
+            code:res.code
+          }).then((res)=> {
+            // 拿到openid，小程序端保存
+            store.setItem('openId',res.openid)
+          }).catch((res)=> {
+            console.log('error:'+ res.message)
+          })
+        }
+      }
+    })
+  },
+  // 获取用户信息并请求后端Node登录接口
+  getUserProfile() {
     // 推荐使用wx.getUserProfile获取用户信息，开发者每次通过该接口获取用户个人信息均需用户确认，开发者妥善保管用户快速填写的头像昵称，避免重复弹窗
     wx.getUserProfile({
       desc: '展示用户信息', // 声明获取用户个人信息后的用途，后续会展示在弹窗中，请谨慎填写
       success: (res) => {
-        console.log(res)
-        this.setData({
-          userInfo: res.userInfo,
-          hasUserInfo: true
+        console.log('用户信息',res)
+        let userInfo = res.userInfo
+        userInfo.openid = store.getItem("openId")
+        // 请求Node后端登录接口
+        app.get(Api.login,{userInfo}).then((res)=> {
+          store.setItem("userId", res.userId)
+          this.setData({
+            userId:res.userId
+          })
         })
       }
     })
   },
-  // getUserInfo(e) {
-  //   // 不推荐使用getUserInfo获取用户信息，预计自2021年4月13日起，getUserInfo将不再弹出弹窗，并直接返回匿名的用户个人信息
-  //   console.log(e)
-  //   this.setData({
-  //     userInfo: e.detail.userInfo,
-  //     hasUserInfo: true
-  //   })
-  // }
 })
