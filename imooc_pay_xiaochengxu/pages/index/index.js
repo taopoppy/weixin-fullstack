@@ -3,12 +3,17 @@
 const app = getApp()
 let Api = app.Api
 let store = require('../../utils/store.js')
+let router = app.router
 
 Page({
   data:{
     userId: store.getItem('userId')
   },
   onLoad:function() {
+    wx.showShareMenu({
+      withShareTicket: true,
+      menus: ['shareAppMessage', 'shareTimeline']
+    })
     // 判断用户是否登录
     if(!this.data.userId) {
       // 没有登录就去登录，获取code，再获取openid
@@ -26,6 +31,7 @@ Page({
           app.get(Api.getSession, {
             code:res.code
           }).then((res)=> {
+            console.log("getSession的结果",res)
             // 拿到openid，小程序端保存
             store.setItem('openId',res.openid)
           }).catch((res)=> {
@@ -54,4 +60,21 @@ Page({
       }
     })
   },
+
+  // 充值按钮
+  recharge:function() {
+    router.push('pay')
+  },
+  // 活动详情按钮
+  activity:function() {
+    router.push('activity')
+  },
+  // 分享逻辑
+  onShareAppMessage() {
+    return {
+      title: "欢迎来到taopoppy的music",
+      path: "/pages/index/index",
+      imageUrl: "/assets/images/header.png"
+    }
+  }
 })

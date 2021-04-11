@@ -2,6 +2,7 @@
 import Api from './http/api.js';
 import request from './http/request.js';
 import config from './env/index.js';
+import router from './utils/routes.js'
 const env = 'Dev'                    // 可选的值有 Dev、Test、Slave、Prod
 
 // 注意，只有页面才能通过const app = wx.getApp()的方式拿到App
@@ -12,7 +13,8 @@ App.config.env = env               // 配置当中也加入环境的名称
 
 App({
   config: config[env],             // 挂载不同环境的配置 
-  Api:Api,                         // api信息全部挂载到app对象上
+  Api,                             // api信息全部挂载到app对象上
+  router,                          // 路由信息挂载到app对象上
   get: request.fetch,              // get方法
   post: (url, data,option) => {    // post方法
     option.method = "post"

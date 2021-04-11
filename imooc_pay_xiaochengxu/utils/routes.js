@@ -1,5 +1,3 @@
-const { parse } = require("path")
-
 // 路由集中管理
 const routePath = {
   "index": "/pages/index/index",

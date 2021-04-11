@@ -17,29 +17,32 @@ router.get('/getSession',function(req,res){
     let sessionUrl = `https://api.weixin.qq.com/sns/jscode2session?appid=${config.appId}&secret=${config.appSecret}&js_code=${code}&grant_type=authorization_code`;
     request(sessionUrl,function(err,response,body){
       let result = util.handleResponse(err, response, body);
-      res.json(result);
+      res.json(result); // 返回给小程序openid和session_key
     })
   }
 })
+
 // 小程序授权登录（小程序）
 router.get('/login',async function(req,res){
-  let userInfo = JSON.parse(req.query.userInfo);
+  let userInfo = JSON.parse(req.query.userInfo); // 获取到小程序传来的完整的用户的信息，包括小程序openid和用户基础信息
   if (!userInfo){
     res.json(util.handleFail('用户信息不能为空',10002))
   }else{
-    // 查询当前用户是否已经注册
+    // 查询当前用户是否已经注册,查询的是users_mp
     let userRes = await dao.query({ openid: userInfo.openid},'users_mp');
     if (userRes.code == 0){
       if (userRes.data.length >0){
+        // 如果用户已经存在，返回用户在mongodb当中的_id,_id是mongodb唯一的key
         res.json(util.handleSuc({
-          userId: userRes.data[0]._id
+          userId: userRes.data[0]._id // 返回userId
         }))
       }else{
+        // 如果用户没有查出来，说明是新用户，应该作为新数据插入数据库当中
         let insertData = await dao.insert(userInfo,'users_mp');
         if (insertData.code == 0){
           let result = await dao.query({ openid: userInfo.openid }, 'users_mp');
           res.json(util.handleSuc({
-            userId: result.data[0]._id
+            userId: result.data[0]._id   // 返回userId
           }))
         }else{
           res.json(insertData);
@@ -50,10 +53,12 @@ router.get('/login',async function(req,res){
     }
   }
 })
+
 // 支付回调通知（小程序）
 router.get('/pay/callback',function(req,res){
   res.json(util.handleSuc());
 })
+
 // 小程序支付（小程序）
 router.get('/pay/payWallet',function(req,res){
   let openId = req.query.openId;//用户的openid
