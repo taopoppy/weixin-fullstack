@@ -1,14 +1,16 @@
 let express = require('express');
-let router = express.Router();
+let router = express.Router(); // 路由
 let request = require('request');
 let config = require('./config');
 let util = require('./../../util/util')
 let dao = require('./../common/db')
 let wxpay = require('./../common/wxpay')
+
 config = Object.assign({}, config.mp);
-// 获取session接口
+
+// 获取session接口（小程序）
 router.get('/getSession',function(req,res){
-  let code = req.query.code;
+  let code = req.query.code; // 从小程序拿到wx.login返回的code
   if(!code){
     res.json(util.handleFail('code不能为空',10001));
   }else{
@@ -19,7 +21,7 @@ router.get('/getSession',function(req,res){
     })
   }
 })
-// 小程序授权登录
+// 小程序授权登录（小程序）
 router.get('/login',async function(req,res){
   let userInfo = JSON.parse(req.query.userInfo);
   if (!userInfo){
@@ -48,11 +50,11 @@ router.get('/login',async function(req,res){
     }
   }
 })
-// 支付回调通知
+// 支付回调通知（小程序）
 router.get('/pay/callback',function(req,res){
   res.json(util.handleSuc());
 })
-// 小程序支付
+// 小程序支付（小程序）
 router.get('/pay/payWallet',function(req,res){
   let openId = req.query.openId;//用户的openid
   let appId = config.appId;//应用的ID
