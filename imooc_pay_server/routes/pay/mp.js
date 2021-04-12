@@ -56,6 +56,7 @@ router.get('/login',async function(req,res){
 
 // 支付回调通知（小程序）
 router.get('/pay/callback',function(req,res){
+  console.log("支付回调请求", req)
   res.json(util.handleSuc());
 })
 
