@@ -61,13 +61,14 @@ router.get('/pay/callback',function(req,res){
 
 // 小程序支付（小程序）
 router.get('/pay/payWallet',function(req,res){
-  let openId = req.query.openId;//用户的openid
-  let appId = config.appId;//应用的ID
-  let attach = "小程序支付课程体验";//附加数据
-  let body = "欢迎学习慕课首门支付专项课程";//支付主体内容
-  let total_fee = req.query.money;//支付总金额
-  let notify_url = "http://localhost:3000/api/mp/pay/callback"
-  let ip = "123.57.2.144";
+  // 开始定义公共参数
+  let openId = req.query.openId;                      // 用户的openid
+  let appId = config.appId;                           // 应用的ID
+  let attach = "小程序支付体验";                      // 附加数据
+  let body = "taopopy商品支付";                       // 支付主体内容
+  let total_fee = req.query.money;                    // 支付总金额，单位是分
+  let notify_url = "http://localhost:3000/api/mp/pay/callback" // 支付成功的通知地址，开发可以写localhost，但是上线必须是正式域名地址
+  let ip = "61.133.217.141";                           // 请求微信服务器的ip，终端使用curl ipinfo.io可以查看
   wxpay.order(appId,attach,body,openId,total_fee,notify_url,ip).then((result)=>{
     res.json(util.handleSuc(result));
   }).catch((result)=>{

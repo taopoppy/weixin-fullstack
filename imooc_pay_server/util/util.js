@@ -3,6 +3,22 @@
  */
 let createHash = require('create-hash');
 module.exports = {
+  // 生成签名（支付）
+  getSign(params, key){
+    let string = this.raw(params) + '&key=' + key;
+    let sign = createHash('md5').update(string).digest('hex');
+    return sign.toUpperCase();
+  },
+  // 生成Node后端的交易订单号（支付）
+  getTradeId(type='wx'){
+    let date = new Date().getTime().toString();
+    let text = ''; // 5位的随机数
+    let possible = '0123456789';
+    for(let i=0;i<5;i++){
+      text += possible.charAt(Math.floor(Math.random() * possible.length))
+    }
+    return (type == 'wx'?'TaopoppyWxJuZi':'TaopoppyMpJuZi') + date + text;
+  },
   // 生成随机数（分享）
   createNonceStr(){
     // toString(36)转化成为36进制的，substr(2,15)截取2-15位
@@ -12,22 +28,6 @@ module.exports = {
   createTimeStamp(){
     // getTime()/1000转换成秒
     return parseInt(new Date().getTime() / 1000) + ''
-  },
-  // 生成签名（支付）
-  getSign(params, key){
-    let string = this.raw(params) + '&key=' + key;
-    let sign = createHash('md5').update(string).digest('hex');
-    return sign.toUpperCase();
-  },
-  // 生成系统的交易订单号（支付）
-  getTradeId(type='wx'){
-    let date = new Date().getTime().toString();
-    let text = '';
-    let possible = '0123456789';
-    for(let i=0;i<5;i++){
-      text += possible.charAt(Math.floor(Math.random() * possible.length))
-    }
-    return (type == 'wx'?'ImoocWxJuZi':'ImoocMpJuZi') + date + text;
   },
   // Object 转换成json并排序（分享）
   // {c:3, b:2, d:4, a:1} => 'a=1&b=2&c=3&d=4'

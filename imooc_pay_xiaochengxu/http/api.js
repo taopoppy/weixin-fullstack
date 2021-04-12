@@ -1,5 +1,6 @@
 // api相关代码
 module.exports = {
   getSession:'/api/mp/getSession',
-  login: '/api/mp/login'
+  login: '/api/mp/login',
+  payWallet:'/api/mp/pay/payWallet'
 }

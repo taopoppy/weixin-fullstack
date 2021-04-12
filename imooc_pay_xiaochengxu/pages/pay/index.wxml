@@ -1,2 +1,6 @@
 <!--pages/pay/index.wxml-->
-<text>pages/pay/index.wxml</text>
+<view>
+  <input type="number" bindinput="bindKeyInput" placeholder="请输入支付金额"/>
+  <text>您输入的金额为{{inputValue/100}}元</text>
+  <button bindtap="pay" type="primary">支付</button>
+</view>
