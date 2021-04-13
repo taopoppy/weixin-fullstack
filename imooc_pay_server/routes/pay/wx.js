@@ -112,7 +112,13 @@ router.get('/jssdk',async function(req,res){
           'chooseWXPay'
         ] // 必填，需要使用的JS接口列表，这个是要根据自己的需求，比如我们要使用分享和支付功能，就去JS-SDK说明文档中找这个接口名称即可
       }))
+    }else {
+      res.json(result2)
     }
+  } else {
+    // 没有拿到access_token，多半是因为没有设置IP白名单
+    // 这里result当中包含了无效的ip地址
+    res.json(result)
   }
 })
 

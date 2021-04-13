@@ -4,7 +4,7 @@
 		<div class="nickname" v-if="userInfo" v-text="userInfo.nickname"></div>
 		<div class="btn-group">
 			<button class="btn">分享</button>
-			<button class="btn btn-primary">充值</button>
+			<button class="btn btn-primary" v-on:click="goToPay">充值</button>
 			<button class="btn">活动详情</button>
 		</div>
 	</div>
@@ -26,6 +26,14 @@ export default {
 		}
 	},
 	methods: {
+		//跳转到支付页面
+		// eslint-disable-next-line no-unused-vars
+		goToPay: function(event) {
+			this.$router.push({
+				path: "/pay"
+			})
+		},
+		// 获取用户信息
 		getUserInfo() {
 			this.$http.get(API.getUserInfo).then((response) => {
 				let res = response.data
