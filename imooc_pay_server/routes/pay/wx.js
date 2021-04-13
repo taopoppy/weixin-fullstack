@@ -18,7 +18,7 @@ router.get('/test',function (req,res) {
 })
 
 
-// 用户授权重定向
+// 用户授权重定向(H5)
 router.get('/redirect',function (req,res) {
   let redirectUrl = req.query.url          // 前端发来的微信授权完毕后的跳转回去的地址（前端已经加密）
   let scope = req.query.scope              // 获取用户信息的scope
@@ -28,7 +28,7 @@ router.get('/redirect',function (req,res) {
   res.redirect(authorizeUrl);              // 重定向到微信授权的地址
 })
 
-// 根据code获取用户的OpenId
+// 根据code获取用户的OpenId(H5)
 router.get('/getOpenId',async function(req,res){
   let code = req.query.code;                                     // 1. 微信授权后会在跳回http://m.abcd.com/api/wechat/getOpenId 的时候加上code参数
   console.log("code:"+code);
@@ -71,14 +71,14 @@ router.get('/getOpenId',async function(req,res){
   }
 })
 
-// 获取用户信息
+// 获取用户信息(H5)
 router.get('/getUserInfo',async function(req,res){
   let access_token = cache.get('access_token'), openId = cache.get('openId');
   let result = await common.getUserInfo(access_token, openId);
   res.json(result);
 })
 
-// 获取jssdk签名
+// 获取jssdk签名(H5)
 router.get('/jssdk',async function(req,res){
   let url = req.query.url;
   let result = await common.getToken(); // 1. 获取普通的access_token
@@ -123,23 +123,23 @@ router.get('/jssdk',async function(req,res){
 })
 
 
-// 微信支付
+// 微信支付（H5）
 router.get('/pay/payWallet', function (req, res) {
-  let openId = req.cookies.openId;
+  let openId = req.cookies.openId; // 拿到前端h5得cookie中得openId
   let appId = config.appId;
   // 商品简单描述
-  let body = "欢迎学习慕课首门支付专项课程。";
+  let body = "H5请求支付taopoppy";
   // 如果是post请求，则用req.body获取参数
   let total_fee = req.query.money;
   // 微信支付成功回调地址，用于保存用户支付订单信息
-  let notify_url = "http://m.51purse.com/api/wechat/pay/callback";
+  let notify_url = "http://m.abcd.com/api/wechat/pay/callback";
   // 通过微信支付认证的商户ID
   let mch_id = config.mch_id;
   // 附加数据
   let attach = "微信支付课程体验";
   // 调用微信支付API的机器IP
-  let ip = '123.57.2.144';
-  // 封装好的微信下单接口
+  let ip = '61.133.217.141';
+  // 封装好的微信下单接口，统一下单接口
   wxpay.order(appId, attach, body, mch_id, openId, total_fee, notify_url, ip).then(function (result) {
     res.json(util.handleSuc(result));
   }).catch((result) => {
@@ -160,14 +160,16 @@ router.post('/pay/callback', function (req, res) {
       return;
     }
     let data = xmlData.xml;
+    // data当中有很多信息，从中挑除自己要存到数据库里的即可
+    // data当中有哪些数据，参照https://pay.weixin.qq.com/wiki/doc/api/jsapi.php?chapter=9_7&index=8
     let order = {
-      openId: data.openid[0],
-      totalFee: data.total_fee[0],
-      isSubscribe: data.is_subscribe[0],
-      orderId: data.out_trade_no[0],
-      transactionId: data.transaction_id[0],
-      tradeType: data.trade_type[0],
-      timeEnd: data.time_end[0]
+      openId: data.openid[0],                // 用户标识
+      totalFee: data.total_fee[0],           // 订单金额
+      isSubscribe: data.is_subscribe[0],     // 是否关注公众账号
+      orderId: data.out_trade_no[0],         // 商户订单号
+      transactionId: data.transaction_id[0], // 微信支付订单号
+      tradeType: data.trade_type[0],         // 交易类型
+      timeEnd: data.time_end[0]              // 支付完成时间
     }
     // 插入订单数据
     let result = await dao.insert(order, 'orders');
